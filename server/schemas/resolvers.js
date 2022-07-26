@@ -37,7 +37,7 @@ const resolvers = {
     },
     saveBook: async (parent, { bookData }, context) => {
       if (context.user) {
-        const updatedUser = await User.FindbyIdAndUpdate(
+        const updatedUser = await User.FindByIdAndUpdate(
           {_id: context.user._id},
           {$push: {savedBooks: bookData}},
           {new:true}
@@ -47,7 +47,7 @@ const resolvers = {
       }
       throw new AuthenticationError('You need to be logged in!');
     },
-    deleteBook: async (parent, { bookId }, context) => {
+    removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         const updatedUser = await User.FindOneAndUpdate(
           {_id: context.user._id},
