@@ -35,73 +35,31 @@ const resolvers = {
 
       return { token, user };
     },
-    addThought: async (parent, { bookData }, context) => {
+    saveBook: async (parent, { bookData }, context) => {
       if (context.user) {
-        const thought = await Book.create({
-          thoughtText,
-          thoughtAuthor: context.user.username,
-        });
-
-        await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $addToSet: { thoughts: thought._id } }
+        const updatedUser = await User.FindbyIdAndUpdate(
+          {_id: context.user._id},
+          {$push: {savedBooks: bookData}},
+          {new:true}
         );
 
-        return thought;
+        return updatedUser;
       }
       throw new AuthenticationError('You need to be logged in!');
     },
-    addComment: async (parent, { thoughtId, commentText }, context) => {
+    deleteBook: async (parent, { bookId }, context) => {
       if (context.user) {
-        return Book.findOneAndUpdate(
-          { _id: thoughtId },
-          {
-            $addToSet: {
-              comments: { commentText, commentAuthor: context.user.username },
-            },
-          },
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
-      }
-      throw new AuthenticationError('You need to be logged in!');
-    },
-    removeThought: async (parent, { thoughtId }, context) => {
-      if (context.user) {
-        const thought = await Book.findOneAndDelete({
-          _id: thoughtId,
-          thoughtAuthor: context.user.username,
-        });
-
-        await User.findOneAndUpdate(
-          { _id: context.user._id },
-          { $pull: { thoughts: thought._id } }
+        const updatedUser = await User.FindOneAndUpdate(
+          {_id: context.user._id},
+          {$pull: {savedBooks: {bookId}}},
+          {new:true}
         );
 
-        return thought;
+        return updatedUser;
       }
       throw new AuthenticationError('You need to be logged in!');
     },
-    removeComment: async (parent, { thoughtId, commentId }, context) => {
-      if (context.user) {
-        return Book.findOneAndUpdate(
-          { _id: thoughtId },
-          {
-            $pull: {
-              comments: {
-                _id: commentId,
-                commentAuthor: context.user.username,
-              },
-            },
-          },
-          { new: true }
-        );
-      }
-      throw new AuthenticationError('You need to be logged in!');
-    },
-  },
+  }
 };
 
 module.exports = resolvers;
