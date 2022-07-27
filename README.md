@@ -30,4 +30,4 @@ This website can be accessed at
 
 Below is a screenshot of the deployed application. 
 
-![Screenshot](assets/images/screenshot.png)
+![Screenshot](client/images/screenshot.png)
